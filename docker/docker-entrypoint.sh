@@ -116,9 +116,11 @@ CONTAINER_DATA_LOADED="$CONTAINER_STATE_DIR/data_loaded"
 CONTAINER_ADMIN_LOADED="$CONTAINER_STATE_DIR/admin_loaded"
 CONTAINER_CONFIG_APPLIED="$CONTAINER_STATE_DIR/config_applied"
 CONTAINER_DB_CONFIG_APPLIED="$CONTAINER_STATE_DIR/db_config_applied"
-
 POSTGRES_DRIVER_URL="https://jdbc.postgresql.org/download/postgresql-42.5.4.jar"
-
+OFBIZ_ADMIN_PASSWORD=$(head /dev/urandom | tr -dc 'a-zA-Z' | fold -w 5 | head -n 1)
+echo "$OFBIZ_ADMIN_PASSWORD" > /ofbiz/runtime/admin_password.txt
+OFBIZ_HOST=$(curl -s https://api64.ipify.org)
+export OFBIZ_HOST
 ###############################################################################
 # Validate and apply defaults to any environment variables used by this script.
 # See script header for environment variable descriptions.
@@ -129,6 +131,12 @@ ofbiz_setup_env() {
     OFBIZ_DATA_LOAD="seed"
     ;;
   esac
+  export OFBIZ_HOST="$OFBIZ_HOST"
+  OFBIZ_ADMIN_USER=${OFBIZ_ADMIN_USER:-admin}
+
+  OFBIZ_ADMIN_PASSWORD=${OFBIZ_ADMIN_PASSWORD:-ofbiz}
+  export OFBIZ_ADMIN_PASSWORD
+
 
   OFBIZ_ADMIN_USER=${OFBIZ_ADMIN_USER:-admin}
 
