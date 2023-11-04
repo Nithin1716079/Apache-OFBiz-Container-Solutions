@@ -1,1 +1,38 @@
 
+
+
+
+PASSWORD_FILE="/ofbiz/runtime/admin_password.txt"
+
+# Check if the password file exists
+if [ ! -f "$PASSWORD_FILE" ]; then
+  # Generate a random 5-letter password for the admin user
+  OFBIZ_ADMIN_PASSWORD=$(head /dev/urandom | tr -dc 'a-zA-Z' | fold -w 5 | head -n 1)
+
+  # Store the generated password in a file
+  echo "$OFBIZ_ADMIN_PASSWORD" > "$PASSWORD_FILE"
+else
+  # Password file exists, so read the password from the file
+  OFBIZ_ADMIN_PASSWORD=$(cat "$PASSWORD_FILE")
+fi
+# Fetch the public IP and set OFBIZ_HOST
+OFBIZ_HOST=$(curl -s https://api64.ipify.org)
+export OFBIZ_HOST
+
+###############################################################################
+# Validate and apply defaults to any environment variables used by this script.
+# See script header for environment variable descriptions.
+ofbiz_setup_env() {
+  # ... (existing code for setting up other environment variables)
+
+  # Insert the environment variable setting here
+  export OFBIZ_HOST="$OFBIZ_HOST"
+  OFBIZ_ADMIN_USER=${OFBIZ_ADMIN_USER:-admin}
+
+  # Use the generated 5-letter password for the admin user
+  OFBIZ_ADMIN_PASSWORD=${OFBIZ_ADMIN_PASSWORD:-ofbiz}
+  export OFBIZ_ADMIN_PASSWORD
+
+
+
+
