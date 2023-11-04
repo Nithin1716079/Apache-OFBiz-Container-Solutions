@@ -1,38 +1,29 @@
+# Apache-OFBiz-Enterprises-Solutions-Docker-file
+#Step1 : Clone Github
+git clone https://github.com/Nithin1716079/Apache-OFBiz-Container-Solutions
+# Step2 :Install docker buildX
+ 
+  - apt-get update && apt-get install ca-certificates curl gnupg lsb-release -y
+  - mkdir -p /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+  - apt-get update && apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+# step 3
+Docker build  command :
+DOCKER_BUILDKIT=1 docker build --tag ofbiz-docker .
+
+# step 4
+Docker run command :
+docker run -it -p 8080:8080 ofbiz-docker
+
+#Step 5
+Copy the Public IP of your instance Replace the ‘’Public_IP’’ in the URL and Open the URL in your Browser   
+URL: http://Public_IP:8080/partymgr/control/main   
 
 
-
-
-PASSWORD_FILE="/ofbiz/runtime/admin_password.txt"
-
-# Check if the password file exists
-if [ ! -f "$PASSWORD_FILE" ]; then
-  # Generate a random 5-letter password for the admin user
-  OFBIZ_ADMIN_PASSWORD=$(head /dev/urandom | tr -dc 'a-zA-Z' | fold -w 5 | head -n 1)
-
-  # Store the generated password in a file
-  echo "$OFBIZ_ADMIN_PASSWORD" > "$PASSWORD_FILE"
-else
-  # Password file exists, so read the password from the file
-  OFBIZ_ADMIN_PASSWORD=$(cat "$PASSWORD_FILE")
-fi
-# Fetch the public IP and set OFBIZ_HOST
-OFBIZ_HOST=$(curl -s https://api64.ipify.org)
-export OFBIZ_HOST
-
-###############################################################################
-# Validate and apply defaults to any environment variables used by this script.
-# See script header for environment variable descriptions.
-ofbiz_setup_env() {
-  # ... (existing code for setting up other environment variables)
-
-  # Insert the environment variable setting here
-  export OFBIZ_HOST="$OFBIZ_HOST"
-  OFBIZ_ADMIN_USER=${OFBIZ_ADMIN_USER:-admin}
-
-  # Use the generated 5-letter password for the admin user
-  OFBIZ_ADMIN_PASSWORD=${OFBIZ_ADMIN_PASSWORD:-ofbiz}
-  export OFBIZ_ADMIN_PASSWORD
-
-
+# step 6
+To find password :
+docker exec -it <Container ID >  cat /ofbiz/runtime/admin_password.txt 
 
 
