@@ -63,6 +63,12 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends xsltproc \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+    
+RUN pip3 install boto3
+
 RUN ["useradd", "ofbiz"]
 
 # Create directories used to mount volumes where hooks into the startup process can be placed.
@@ -91,7 +97,7 @@ RUN echo '${uiLabelMap.CommonJavaVersion}:' "$(java --version | grep Runtime | s
 # Leave executable scripts owned by root and non-writable, addressing sonarcloud rule,
 # https://sonarcloud.io/organizations/apache/rules?open=docker%3AS6504&rule_key=docker%3AS6504
 COPY --chmod=555 docker/docker-entrypoint.sh docker/send_ofbiz_stop_signal.sh .
-
+COPY docker/metering.py .
 COPY --chmod=444 docker/disable-component.xslt .
 COPY --chmod=444 docker/templates templates
 
